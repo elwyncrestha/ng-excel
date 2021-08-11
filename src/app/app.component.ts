@@ -16,7 +16,81 @@ export class AppComponent {
       fileName: 'ng-excel',
       sheetName: 'Default',
       // pageTitle: 'List of Events',
-      columns: ['S No.', 'Event Name', 'Start Date', 'End Date']
+      colsWidth: [10, 15, 35, 35],
+      tableColumns: [
+        { key: 'sNo', label: 'S No.' },
+        { key: 'eventName', label: 'Event Name' },
+        { key: 'eventStartDate', label: 'Start Date' },
+        { key: 'eventEndDate', label: 'End Date' },
+      ],
+      tableData: [
+        {
+          sNo: 1,
+          eventName: 'Event 1',
+          eventStartDate: '2021-08-11T12:46:12.354Z',
+          eventEndDate: '2021-08-15T12:46:12.354Z',
+        },
+        {
+          sNo: 2,
+          eventName: 'Event 2',
+          eventStartDate: '2021-08-11T12:46:12.354Z',
+          eventEndDate: '2021-08-15T12:46:12.354Z',
+        },
+        {
+          sNo: 3,
+          eventName: 'Event 3',
+          eventStartDate: '2021-08-11T12:46:12.354Z',
+          eventEndDate: '2021-08-15T12:46:12.354Z',
+        },
+        {
+          sNo: 4,
+          eventName: 'Event 4',
+          eventStartDate: '2021-08-11T12:46:12.354Z',
+          eventEndDate: '2021-08-15T12:46:12.354Z',
+        },
+        {
+          sNo: 5,
+          eventName: 'Event 5',
+          eventStartDate: '2021-08-11T12:46:12.354Z',
+          eventEndDate: '2021-08-15T12:46:12.354Z',
+        },
+        {
+          sNo: 6,
+          eventName: 'Event 6',
+          eventStartDate: '2021-08-11T12:46:12.354Z',
+          eventEndDate: '2021-08-15T12:46:12.354Z',
+        },
+        {
+          sNo: 7,
+          eventName: 'Event 7',
+          eventStartDate: '2021-08-11T12:46:12.354Z',
+          eventEndDate: '2021-08-15T12:46:12.354Z',
+        },
+        {
+          sNo: 8,
+          eventName: 'Event 8',
+          eventStartDate: '2021-08-11T12:46:12.354Z',
+          eventEndDate: '2021-08-15T12:46:12.354Z',
+        },
+        {
+          sNo: 9,
+          eventName: 'Event 9',
+          eventStartDate: '2021-08-11T12:46:12.354Z',
+          eventEndDate: '2021-08-15T12:46:12.354Z',
+        },
+        {
+          sNo: 10,
+          eventName: 'Event 10',
+          eventStartDate: '2021-08-11T12:46:12.354Z',
+          eventEndDate: '2021-08-15T12:46:12.354Z',
+        },
+        {
+          sNo: 11,
+          eventName: 'Event 11',
+          eventStartDate: '2021-08-11T12:46:12.354Z',
+          eventEndDate: '2021-08-15T12:46:12.354Z',
+        },
+      ],
     });
   }
 }

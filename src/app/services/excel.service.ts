@@ -41,6 +41,7 @@ export class ExcelService {
     this.preferences = preferences;
     this.initWorkSheet();
     this.renderTable();
+    this.setColsWidth();
     this.export();
   }
 
@@ -60,12 +61,44 @@ export class ExcelService {
   }
 
   private renderTable(): void {
-    const { columns } = this.preferences;
-    if (!columns) {
+    const { tableColumns, tableData } = this.preferences;
+    if (!tableColumns) {
       return;
     }
     // render columns
-    this.XLSX_Utils.sheet_add_aoa(this.workSheet, [columns], { origin: -1 });
+    this.XLSX_Utils.sheet_add_aoa(
+      this.workSheet,
+      [tableColumns.map((c) => c.label)],
+      { origin: -1 }
+    );
+    // render data
+    const rows = new Array<Array<any>>();
+    tableData?.forEach((data) => {
+      const row = new Array<any>();
+      tableColumns
+        .map((c) => c.key)
+        .forEach((c) => {
+          row.push(data[c] ?? '');
+        });
+      rows.push(row);
+    });
+    this.XLSX_Utils.sheet_add_aoa(this.workSheet, rows, { origin: -1 });
+  }
+
+  private setColsWidth(): void {
+    const { colsWidth } = this.preferences;
+    if (!colsWidth || colsWidth.length < 1) {
+      return;
+    }
+
+    if (!this.workSheet['!cols']) {
+      this.workSheet['!cols'] = [];
+    }
+    colsWidth.forEach((w, i) => {
+      if (this.workSheet['!cols']) {
+        this.workSheet['!cols'][i] = { width: w };
+      }
+    });
   }
 
   private export(): void {
