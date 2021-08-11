@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ExcelService } from './services/excel.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'ng-excel';
+
+  constructor(private readonly excelService: ExcelService) {}
+
+  generate(): void {
+    this.excelService.generate({ fileName: 'ng-excel', sheetName: 'Default' });
+  }
 }
