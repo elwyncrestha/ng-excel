@@ -8,7 +8,7 @@ import {
   WritingOptions,
   XLSX$Utils,
 } from 'xlsx';
-import { ExcelPreference } from './excel.model';
+import { CustomTableRow, ExcelPreference } from './excel.model';
 
 @Injectable({
   providedIn: 'root',
@@ -40,49 +40,83 @@ export class ExcelService {
   async generate(preferences: ExcelPreference): Promise<void> {
     this.preferences = preferences;
     this.initWorkSheet();
-    this.renderTable();
+    this.addPageTitle();
+    this.renderTables();
     this.setColsWidth();
     this.export();
   }
 
   private initWorkSheet(): void {
-    const { pageTitle } = this.preferences;
-    this.workSheet = pageTitle
-      ? this.XLSX_Utils.json_to_sheet([{ A: pageTitle }], {
-          header: ['A'],
-          skipHeader: true,
-        })
-      : this.XLSX_Utils.json_to_sheet([]);
-
-    if (pageTitle) {
-      this.workSheet['!rows'] = [{ hpt: 25 }];
-      this.addBlankRow();
-    }
+    this.workSheet = {};
   }
 
-  private renderTable(): void {
-    const { tableColumns, tableData } = this.preferences;
-    if (!tableColumns) {
+  private addPageTitle(): void {
+    const { pageTitle } = this.preferences;
+    if (!pageTitle) {
       return;
     }
-    // render columns
-    this.XLSX_Utils.sheet_add_aoa(
-      this.workSheet,
-      [tableColumns.map((c) => c.label)],
-      { origin: -1 }
-    );
-    // render data
-    const rows = new Array<Array<any>>();
-    tableData?.forEach((data) => {
-      const row = new Array<any>();
-      tableColumns
-        .map((c) => c.key)
-        .forEach((c) => {
-          row.push(data[c] ?? '');
-        });
-      rows.push(row);
+
+    this.XLSX_Utils.sheet_add_json(this.workSheet, [{ A: pageTitle }], {
+      header: ['A'],
+      skipHeader: true,
     });
-    this.XLSX_Utils.sheet_add_aoa(this.workSheet, rows, { origin: -1 });
+    this.workSheet['!rows'] = [{ hpt: 25 }];
+    this.addBlankRow();
+  }
+
+  private renderTables(): void {
+    const { tables } = this.preferences;
+    tables?.forEach((table) => {
+      const { rowsBefore, tableColumns, tableData, rowsAfter } = table;
+      if (!tableColumns) {
+        return;
+      }
+      // add rows before table if any
+      if (rowsBefore) {
+        this.addRows(rowsBefore);
+      }
+      // render columns
+      this.XLSX_Utils.sheet_add_aoa(
+        this.workSheet,
+        [tableColumns.map((c) => c.label)],
+        { origin: -1 }
+      );
+      // render data
+      const rows = new Array<Array<any>>();
+      tableData?.forEach((data) => {
+        const row = new Array<any>();
+        tableColumns
+          .map((c) => c.key)
+          .forEach((c) => {
+            row.push(data[c] ?? '');
+          });
+        rows.push(row);
+      });
+      this.XLSX_Utils.sheet_add_aoa(this.workSheet, rows, { origin: -1 });
+      this.addBlankRow();
+      // add rows after table if any
+      if (rowsAfter) {
+        this.addRows(rowsAfter);
+      }
+    });
+  }
+
+  private addRows(addingRows: CustomTableRow[]) {
+    addingRows.forEach((add) => {
+      const newRow: any[] = [];
+      add.rows.forEach((rowData) => {
+        newRow.push(rowData.col);
+        if (rowData.offset) {
+          for (let i = 0; i < rowData.offset; i++) {
+            newRow.push('');
+          }
+        }
+      });
+      this.XLSX_Utils.sheet_add_aoa(this.workSheet, [newRow], { origin: -1 });
+      if (add.addBlankRow) {
+        this.addBlankRow();
+      }
+    });
   }
 
   private setColsWidth(): void {
